@@ -8,9 +8,8 @@ SubTrain <- read.table("C:/Users/SUN/Downloads/getdata_projectfiles_UCI HAR Data
 Xtest <- read.table("C:/Users/SUN/Downloads/getdata_projectfiles_UCI HAR Dataset/UCI HAR Dataset/test/X_test.txt")
 Ytest <- read.table("C:/Users/SUN/Downloads/getdata_projectfiles_UCI HAR Dataset/UCI HAR Dataset/test/Y_test.txt")
 SubTest <- read.table("C:/Users/SUN/Downloads/getdata_projectfiles_UCI HAR Dataset/UCI HAR Dataset/test/subject_test.txt")
-variableNames <- read.table("C:/Users/SUN/Downloads/getdata_projectfiles_UCI HAR Dataset/UCI HAR Dataset/features.txt")
 activityLabels <- read.table("C:/Users/SUN/Downloads/getdata_projectfiles_UCI HAR Dataset/UCI HAR Dataset/activity_labels.txt")
-
+features <-read.table("C:/Users/SUN/Downloads/getdata_projectfiles_UCI HAR Dataset/UCI HAR Dataset/features.txt")
 
 # The Above Data are all for Assigning Data in The Project Datasets to the respective Variables
 
@@ -20,16 +19,37 @@ SubTotal <- rbind(SubTrain, SubTest) #Merging Row wise  SubTrain and SubTest
 
 # Below Steps are for selecting values with mean and std using grep function to find text matches 
 
-selectedVars <- variableNames[grep("mean\\(\\)|std\\(\\)",variableNames[,2]),]
-Xtotal <- Xtotal[,selectedVars[,1]]
-colnames(Ytotal) <- "Activity" 
-Ytotal$activityLabels <- factor(Ytotal$activity, labels = as.character(activityLabels[,2]))
-activityLabels <- Ytotal[,-1]
-colnames(Xtotal) <- variableNames[selectedVars[,1],2]
-colnames(SubTotal) <- "Subject"
-Total <- cbind(Xtotal, activityLabels, SubTotal)
-MeanTotal <- Total %>% group_by(activityLabels, subject) %>% summarize_each(funs(mean))
+FilteredVars <- features[grep("mean\\(\\)|std\\(\\)",features[,2]),]
 
-# The Final Clean Data File is written out as a Text File 
+FilteredVars <- FilteredVars[c(1:50),]
 
-write.table(MeanTotal, file = "C:/Users/SUN/Downloads/getdata_projectfiles_UCI HAR Dataset/UCI HAR Dataset/NewCleanData.txt", row.names = FALSE, col.names = TRUE)
+names(Xtotal) <- FilteredVars[,2]
+
+
+FilteredVars <- features[grep("mean\\(\\)|std\\(\\)",features[,2]),]
+
+FilteredVars <- FilteredVars[c(1:50),]
+
+names(Xtotal) <- FilteredVars[,2]
+NewTidyAverage <- NULL
+
+for ( i in 1 : 50 ){
+  NewTidyAverage <- c(NewTidyAverage,mean(Xtotal[,i]))
+  
+  
+}
+names(NewTidyAverage) <- FilteredVars[,2]
+
+write.table(NewTidyAverage,"C:/Users/SUN/Downloads/getdata_projectfiles_UCI HAR Dataset/UCI HAR Dataset/NewTidyOutput.txt",col.names = T ,row.names = T)
+
+
+
+
+
+
+
+
+
+
+
+
